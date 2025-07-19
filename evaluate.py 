@@ -1,0 +1,60 @@
+import json
+import os
+import argparse
+import numpy as np
+
+def iou(boxA, boxB):
+    xA = max(boxA[0], boxB[0])
+    yA = max(boxA[1], boxB[1])
+    xB = min(boxA[0]+boxA[2], boxB[0]+boxB[2])
+    yB = min(boxA[1]+boxA[3], boxB[1]+boxB[3])
+
+    interArea = max(0, xB - xA) * max(0, yB - yA)
+    boxAArea = boxA[2] * boxA[3]
+    boxBArea = boxB[2] * boxB[3]
+    iou = interArea / float(boxAArea + boxBArea - interArea + 1e-6)
+    return iou
+
+def match_boxes(gt_boxes, pred_boxes, iou_thr=0.5):
+    matched = set()
+    correct = 0
+    for i, gt in enumerate(gt_boxes):
+        for j, pred in enumerate(pred_boxes):
+            if j in matched:
+                continue
+            if gt['tag'] == pred['tag'] and iou(gt['box'], pred['box']) > iou_thr:
+                correct += 1
+                matched.add(j)
+                break
+    return correct
+
+def evaluate(gt_folder, pred_folder):
+    tags = ["Button", "Input", "Radio", "Dropdown"]
+    results = {t: {"gt": 0, "pred": 0, "correct": 0} for t in tags}
+    files = [f for f in os.listdir(gt_folder) if f.endswith(".json")]
+    for f in files:
+        with open(os.path.join(gt_folder, f)) as fg:
+            gt = json.load(fg)
+        with open(os.path.join(pred_folder, f)) as fp:
+            pred = json.load(fp)
+        for tag in tags:
+            gt_tag = [a for a in gt if a['tag'].lower()==tag.lower()]
+            pred_tag = [a for a in pred if a['tag'].lower()==tag.lower()]
+            results[tag]["gt"] += len(gt_tag)
+            results[tag]["pred"] += len(pred_tag)
+            results[tag]["correct"] += match_boxes(gt_tag, pred_tag)
+
+    print("| Tag      | GT Boxes | Pred Boxes | Correct | Precision | Recall | F1  |")
+    for t in tags:
+        g, p, c = results[t]["gt"], results[t]["pred"], results[t]["correct"]
+        precision = c / p if p > 0 else 0
+        recall = c / g if g > 0 else 0
+        f1 = 2*precision*recall/(precision+recall) if (precision+recall)>0 else 0
+        print(f"| {t:8} | {g:8d} | {p:10d} | {c:7d} | {precision:9.2f} | {recall:6.2f} | {f1:4.2f} |")
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--ground_truth", required=True)
+    ap.add_argument("--predictions", required=True)
+    args = ap.parse_args()
+    evaluate(args.ground_truth, args.predictions)
