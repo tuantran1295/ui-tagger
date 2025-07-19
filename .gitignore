@@ -1,0 +1,47 @@
+# Node.js (frontend)
+node_modules/
+build/
+dist/
+
+# Python (backend, eval)
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# Key/secret files
+*.secret
+*.key
+*.pem
+
+# VSCode and editor project files
+.vscode/
+.idea/# Node.js (frontend)
+node_modules/
+build/
+dist/
+
+# Python (backend, eval)
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# Key/secret files
+*.secret
+*.key
+*.pem
+
+# VSCode and editor project files
+.vscode/
+.idea/
