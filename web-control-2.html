@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>1000 UI Elements – MUI/Antd/Shadcn/Ionic/Bootstrap/Custom</title>
+  <!-- Frameworks -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* ========== Custom Styles =========== */
+    /* Ant Design Button mimic */
+    .antd-btn {
+      color: #fff;
+      background: #1677ff;
+      border-radius: 6px;
+      border: none;
+      padding: 7px 18px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(22,119,255,0.1);
+      transition: background 0.22s;
+    }
+    .antd-btn:hover { background: #0958d9; }
+    .antd-input {
+      padding:7px 14px; border:1px solid #d9d9d9; border-radius:6px; font-size:15px; transition:.18s; outline:none;
+    }
+    .antd-input:focus {border-color:#1677ff; box-shadow:0 0 0 2px #e6f4ff;}
+    /* MUI Button mimic */
+    .mui-btn {
+      min-width: 84px;
+      color:#fff;
+      background:#1976d2;
+      border:none;
+      border-radius:22px;
+      padding:7px 22px;
+      font-weight:500;
+      letter-spacing: .06em;
+      box-shadow: 0 2px 12px rgba(25, 118, 210, 0.09);
+      transition:background .18s;
+    }
+    .mui-btn:hover { background:#115293; }
+    .mui-input {
+      border:1px solid #1976d2; border-radius:22px; padding:7px 18px; font-size:15px; transition:.16s; outline:none;
+    }
+    .mui-input:focus {border:2px solid #2979ff;}
+    /* Shadcn mimic */
+    .shadcn-btn {
+      background: #f4f4f5;
+      color: #18181b;
+      border: 1px solid #e4e4e7;
+      font-weight: 500;
+      font-family: Inter, system-ui, sans-serif;
+      border-radius: 0.7rem;
+      padding: 0.56rem 1.35rem;
+      font-size: 1rem;
+      transition: background 0.22s, color 0.18s, border 0.18s;
+    }
+    .shadcn-btn:hover {background: #d4d4d8;}
+    .shadcn-input {
+      border: 1.8px solid #e4e4e7; border-radius: 8px; padding:11px 16px; font-family:Inter,sans-serif; font-size:16px;
+      background: #fff; color: #18181b; transition:box-shadow .2s;
+    }
+    .shadcn-input:focus {outline:none; border-color:#818cf8; box-shadow:0 0 1px 2px #6366f1a8;}
+    /* Ionic Button mimic -- mobile, desktop hybrid */
+    .ionic-btn {
+      background: linear-gradient(90deg, #3880ff 10%, #3dc2ff 100%);
+      color: #fff;
+      font-weight:bold;
+      border: none;
+      border-radius: 24px;
+      box-shadow: 0 6px 25px 0 #3880ff33;
+      font-size:17px;
+      padding: 0.7rem 2.2rem;
+      letter-spacing: 0.045em;
+      transition:box-shadow .2s, background .22s;
+    }
+    .ionic-btn:hover {
+      box-shadow: 0 12px 40px 0 #1e61b94d;
+      background: linear-gradient(90deg, #559dff 0%, #3dc1ff 100%);
+    }
+    .ionic-input {
+      border: 1.4px solid #3dc2ff;
+      border-radius: 18px;
+      padding: 12px 18px;
+      font-size:15.5px;
+      background: #f5fbff;
+      outline: none;
+      transition: border .17s;
+    }
+    .ionic-input:focus { border:2.5px solid #3880ff; }
+    /* More custom classes for DROP/Radio diversity */
+    .custom-radio.blue { accent-color: #1677ff;}
+    .custom-radio.green { accent-color: #22c55e;}
+    .custom-radio.pink { accent-color: #ec4899;}
+    .custom-radio.purple{ accent-color: #8b5cf6;}
+    .custom-radio.orange{ accent-color: #f59e42;}
+    .dropdown-simple { padding:8px 16px;border-radius:6px;border:1.2px solid #ddd; background:#fafafb;}
+    /* Color cycling for diversity */
+    .cyc1 { background: #e0f2fe !important; border-color:#7dd3fc !important; color:#0369a1 !important;}
+    .cyc2 { background: #fef9c3 !important; border-color:#fde047 !important; color:#854d0e !important;}
+    .cyc3 { background: #e0e7ff !important; border-color:#818cf8 !important; color:#3730a3 !important;}
+    .cyc4 { background: #fbe4e5 !important; border-color:#fb7185 !important; color:#be123c !important;}
+    .cyc5 { background: #defeec !important; border-color:#34d399 !important; color:#064e3b !important;}
+    .large {font-size:1.13em !important; padding:1.09em 2.1em !important;}
+    .light-shadow {box-shadow:0 1px 8px 0 #dae1e8b2;}
+    .super-rounded {border-radius:55px !important;}
+    .outline { background:transparent !important; border-width:2.4px !important;}
+    /* Grid layout for the huge demo area */
+    .element-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px,1fr));
+      gap:22px 16px;
+      margin:0;
+      padding:0;
+    }
+    @media (max-width:600px){ .element-grid{grid-template-columns: repeat(auto-fit, minmax(160px,1fr));} }
+    .demo-set {
+      display:flex;
+      gap:8px 3px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: #f8fafc;
+      border-radius: 15px;
+      padding: 16px 8px 0 18px;
+      margin-bottom: 9px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .label-sm {font-size:13px; color:#aaa; display:block;}
+    /* Decorative elements for fun */
+    .icon-demo {width:1.15em;vertical-align:-0.13em;display:inline-block;margin-right:5px;}
+  </style>
+</head>
+<body style="background:#f4f5fa">
+  <div class="container my-4">
+    <h1 style="font-family:Inter,sans-serif; font-weight:700; letter-spacing:.03em;">1000+ UI Elements – Gallery</h1>
+    <p>An epic showcase of buttons, inputs, radios, dropdowns—a riot of inspired styles from <b>Material UI</b>, <b>Antd</b>, <b>Shadcn/UI</b>, <b>Ionic</b>, Bootstrap, Bulma, Tailwind and beyond.</p>
+
+    <h3>Style Sampler</h3>
+    <div class="demo-set">
+      <button class="btn btn-primary">Bootstrap Btn</button>
+      <input class="form-control" style="width:123px" placeholder="Bootstrap Input">
+      <button class="button is-info">Bulma Btn</button>
+      <input class="input" style="width:123px" placeholder="Bulma Input">
+      <button class="antd-btn">AntD Btn</button>
+      <input class="antd-input" placeholder="AntD Input" style="width:110px;">
+      <button class="mui-btn large">MUI Btn</button>
+      <input class="mui-input" placeholder="Mui Input" style="width:120px;">
+      <button class="shadcn-btn">Shadcn Btn</button>
+      <input class="shadcn-input" placeholder="Shadcn Input" style="width:117px;">
+      <button class="ionic-btn super-rounded">Ionic Btn</button>
+      <input class="ionic-input" placeholder="Ionic Input" style="width:112px;">
+      <button class="btn btn-outline-dark shadow cyc2">B + Yellow</button>
+      <input class="form-control cyc3" placeholder="Soft Blue">
+      <input type="radio" class="custom-radio blue" name="r0">
+      <input type="radio" class="custom-radio green" name="r1">
+      <select class="dropdown-simple" style="width:120px"><option>Dropdown</option><option>2</option></select>
+      <select class="shadcn-input" style="width:100px;"><option>Shadcn Select</option><option>X</option></select>
+    </div>
+    <p class="label-sm">Example elements. <b>Below:</b> 1000+ auto-generated, style-mixed elements.</p>
+
+    <div class="element-grid" id="hugeGallery">
+      <!-- Elements will load here -->
+    </div>
+  </div>
+<script>
+/**
+ * Cycles through classes and style variations for diversity.
+ * Returns a set of classes for each element.
+ */
+function cycleClass(n, type="btn") {
+  let arr = [];
+  let c = n%8, v = n%4, o = (n%6)+1;
+  if(type=="btn"){
+    if     (c==0) arr.push("btn btn-primary" );
+    else if(c==1) arr.push("mui-btn" );
+    else if(c==2) arr.push("antd-btn");
+    else if(c==3) arr.push("ionic-btn");
+    else if(c==4) arr.push("button is-info");
+    else if(c==5) arr.push("shadcn-btn");
+    else if(c==6) arr.push("btn btn-outline-success");
+    else          arr.push("btn btn-danger");
+    if (n%17==0) arr.push("large");     // some larger
+    if (n%21==0) arr.push("super-rounded");
+    if (c%3==0)  arr.push("cyc"+ (v+1));
+    if(n%9==0)arr.push("outline");
+    if(n%13==0)arr.push("light-shadow");
+  }
+  if (type=="input") {
+    if(c==0) arr.push("mui-input");
+    else if(c==1) arr.push("shadcn-input");
+    else if(c==2) arr.push("antd-input");
+    else if(c==3) arr.push("ionic-input");
+    else if(c==4) arr.push("form-control");
+    else if(c==5) arr.push("input");
+    else arr.push("form-control cyc"+(v+1));
+    if(n%11==0) arr.push("large");
+    if(n%19==0) arr.push("super-rounded");
+    if(n%9==0) arr.push("outline");
+    if(n%29==0) arr.push("cyc"+ (((v+2)%5)+1));
+  }
+  if (type=="dropdown") {
+    if (c==0) arr.push("mui-input");
+    else if (c==1) arr.push("shadcn-input");
+    else if (c==2) arr.push("antd-input");
+    else if (c==3) arr.push("ionic-input");
+    else arr.push("dropdown-simple cyc"+((v%5)+1) );
+    if(n%25==0) arr.push("large");
+    if(n%21==0) arr.push("super-rounded light-shadow");
+    if(n%7==0) arr.push("outline");
+  }
+  if (type=="radio") {
+    let cs = ["blue","green","pink","purple","orange"];
+    arr.push("custom-radio "+cs[(n+o)%5]);
+    if(n%14==0) arr.push("large");
+  }
+  return arr.join(" ");
+}
+
+// Icon generator from SVGs
+function icon(type){
+  if(type=='star')
+    return `<svg class="icon-demo" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1.5l2.36 6.68h7.04L12.04 12.5l2.36 6.68L9 15.36 3.6 19.18l2.36-6.68L1.6 8.18h7.04z"/></svg>`;
+  if(type=='bolt')
+    return `<svg class="icon-demo" viewBox="0 0 18 18" fill="#fbbf24"><path d="M10 2L1 10.5h6.41L7.5 16l8.5-8.5h-6.41L10 2z"/></svg>`;
+  if(type=='check')
+    return `<svg class="icon-demo" viewBox="0 0 18 18" fill="#22c55e"><path d="M6.61 13.17l-3.77-3.76a1.1 1.1 0 011.54-1.54l2.23 2.23 5.13-5.13a1.1 1.1 0 011.54 1.54l-6.14 6.14z"/></svg>`;
+  return '';
+}
+
+const N = 1015; // how many sets (each set = 1 button,1input,1radio,1dropdown)
+const EL = document.getElementById('hugeGallery');
+const buttonIcons = ['','star','bolt','check',''];
+
+// To maximize variety, make a set/group containing all 4 element types per row
+let html = "",labels = ["Button","Input","Radio","Dropdown"];
+for(let i=1;i<=N;i++){
+  // Diversity controls
+  let btnTxt = [
+    icon(buttonIcons[i%buttonIcons.length]) + "Button "+i,
+    icon(buttonIcons[(i+2)%buttonIcons.length])+"Primary "+i,
+    icon(buttonIcons[(i+1)%buttonIcons.length])+"Explore "+i,
+    icon(buttonIcons[(i+3)%buttonIcons.length])+"Okay "+i,
+    icon(buttonIcons[(i)%buttonIcons.length])+"Action "+i,
+    icon(buttonIcons[(i+4)%buttonIcons.length])+"Cool "+i,
+    icon(buttonIcons[(i+5)%buttonIcons.length])+labels[i%labels.length]+" "+i,
+    labels[(i)%labels.length]+" "+i
+  ];
+  let placeholderTxt = [
+    "Enter value "+i,
+    "Input "+i,
+    "Type here "+i,
+    "Field #"+i,
+    "Search "+i,
+    "Your data "+i,
+    "Write "+i,
+    "Type..."
+  ];
+  let selOptions = [
+    `<option>Choose ${i}</option><option>Alpha</option><option>Beta</option>`,
+    `<option>Item #${i}</option><option>One</option><option>Two</option><option>Three</option>`,
+    `<option>Dropdown ${i}</option><option>X</option><option>Y</option><option>Z</option>`
+  ];
+  html += `<div>
+    <button class="${cycleClass(i,'btn')}">${btnTxt[i%btnTxt.length]}</button><br>
+    <input class="${cycleClass(i,'input')}"
+      type="text"
+      placeholder="${placeholderTxt[i%placeholderTxt.length]}" ${i%47==0?"disabled":""} /><br>
+    <input type="radio" class="${cycleClass(i,'radio')}" name="r${i}" ${i%11==0?"checked":""}>
+    <select class="${cycleClass(i,'dropdown')}" ${i%99==0?"disabled":""}>
+      ${selOptions[i%selOptions.length]}
+    </select>
+  </div>
+  `;
+}
+
+EL.innerHTML = html;
+</script>
+</body>
+</html>

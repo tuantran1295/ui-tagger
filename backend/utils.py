@@ -5,7 +5,7 @@ import json
 def call_gpt4_vision(b64_image, prompt):
     image_url = f"data:image/png;base64,{b64_image}"
     completion = openai.chat.completions.create(
-        model="gpt-4-vision-preview",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a computer vision JSON tagging bot."},
             {"role": "user", "content": [

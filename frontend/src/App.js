@@ -28,7 +28,7 @@ function App() {
     // Draw box: mouse handlers
     const handleMouseDown = (e) => {
         if (!image) return;
-        if (e.target !== e.target.getStage()) return;
+       // if (e.target !== e.target.getStage()) return;
         const { x, y } = e.target.getStage().getPointerPosition();
         setDrawingBox({ x, y, width: 0, height: 0 });
     };

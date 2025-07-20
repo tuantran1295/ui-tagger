@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>1000 Styled UI Elements</title>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Bulma -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <!-- Materialize -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- TailwindCSS (via CDN; utility styles) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Ant Design-like mimic */
+    .antd-btn {
+      color: #fff;
+      background: #1677ff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .antd-btn:hover {
+      background: #0958d9;
+    }
+    .antd-input {
+      padding: 8px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      outline: none;
+      font-size: 14px;
+      transition: border .3s;
+    }
+    .antd-input:focus {
+      border-color: #1677ff;
+      box-shadow: 0 0 0 2px rgba(22,119,255,.2);
+    }
+    /* Shadcn mimic */
+    .shadcn-btn {
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.978rem;
+      font-family: Inter, sans-serif;
+      transition: background 0.2s, border 0.2s;
+      cursor: pointer;
+    }
+    .shadcn-btn:hover {
+      background: #e4e4e7;
+      border-color: #c4c4c7;
+    }
+
+    /* Grouping for display */
+    .lib-group {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 1.5rem;
+    }
+    .lib-group > h3 {
+      margin-bottom: 1rem;
+    }
+    .ui-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+    .ui-block {
+      min-width: 150px;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+<h1>UI Elements - Multiple Libraries</h1>
+
+<!-- Bootstrap -->
+<div class="lib-group">
+  <h3>Bootstrap</h3>
+  <div class="ui-grid">
+    <div class="ui-block"><button class="btn btn-primary">Primary Button</button></div>
+    <div class="ui-block"><button class="btn btn-success">Success Button</button></div>
+    <div class="ui-block"><input class="form-control" placeholder="Bootstrap Input"></div>
+    <div class="ui-block">
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="bsRadios" id="bsRadio1">
+        <label class="form-check-label" for="bsRadio1">Radio 1</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="bsRadios" id="bsRadio2">
+        <label class="form-check-label" for="bsRadio2">Radio 2</label>
+      </div>
+    </div>
+    <div class="ui-block">
+      <select class="form-select form-control">
+        <option>Bootstrap Dropdown</option>
+        <option>Option 2</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Tailwind / Shadcn -->
+<div class="lib-group">
+  <h3>TailwindCSS / Shadcn Modules (Mimic)</h3>
+  <div class="ui-grid">
+    <div class="ui-block"><button class="shadcn-btn">Shadcn Button</button></div>
+    <div class="ui-block"><input class="shadcn-btn" style="width:100%;" placeholder="Shadcn Input"></div>
+    <div class="ui-block">
+      <label class="flex items-center space-x-2">
+        <input type="radio" class="accent-indigo-500" name="shadRadios">
+        <span>Tailwind Radio</span>
+      </label>
+    </div>
+    <div class="ui-block">
+      <select class="shadcn-btn" style="width:100%;">
+        <option>Shadcn Dropdown</option>
+        <option>Other Option</option>
+      </select>
+    </div>
+    <div class="ui-block">
+      <button class="px-4 py-2 rounded font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition">
+        Tailwind Button
+      </button>
+    </div>
+    <div class="ui-block">
+      <input class="px-4 py-2 rounded border border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-400" placeholder="Tailwind Input">
+    </div>
+  </div>
+</div>
+
+<!-- Ant Design (Mimic) -->
+<div class="lib-group">
+  <h3>Ant Design (Mimic)</h3>
+  <div class="ui-grid">
+    <div class="ui-block"><button class="antd-btn">Antd Button</button></div>
+    <div class="ui-block"><input class="antd-input" placeholder="Antd Input"></div>
+    <div class="ui-block">
+      <label>
+        <input type="radio" name="antdRadios" style="accent-color:#1677ff"> Antd Radio
+      </label>
+    </div>
+    <div class="ui-block">
+      <select class="antd-input">
+        <option>Antd Dropdown</option>
+        <option>Other Option</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Bulma -->
+<div class="lib-group">
+  <h3>Bulma</h3>
+  <div class="ui-grid">
+    <div class="ui-block"><button class="button is-info">Bulma Button</button></div>
+    <div class="ui-block"><input class="input" placeholder="Bulma Input"></div>
+    <div class="ui-block">
+      <label class="radio"><input type="radio" name="bulmaRadios"> Bulma Radio</label>
+    </div>
+    <div class="ui-block">
+      <div class="select">
+        <select>
+          <option>Bulma Dropdown</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Materialize CSS -->
+<div class="lib-group">
+  <h3>Materialize CSS</h3>
+  <div class="ui-grid">
+    <div class="ui-block"><a class="waves-effect waves-light btn">Materialize Button</a></div>
+    <div class="ui-block"><input type="text" class="validate" placeholder="Materialize Input"></div>
+    <div class="ui-block">
+      <label>
+        <input name="matRadios" type="radio" checked />
+        <span>Materialize Radio</span>
+      </label>
+    </div>
+    <div class="ui-block">
+      <select class="browser-default">
+        <option>Materialize Dropdown</option>
+        <option>Other</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<hr>
+<h2>Duplicate Elements for 1000+ Showcase (Semi-Automatic Placeholder)</h2>
+<div id="mass-ui"></div>
+
+<script>
+  // To demonstrate, append similar elements to reach close to 1000 total.
+  const container = document.getElementById('mass-ui');
+  let count = 0;
+  for(let i=0; i<130; i++) {  // Each loop = 8 elements, ~1000 after initial blocks
+    container.innerHTML += `
+      <div class="ui-grid" style="margin-bottom:8px;">
+        <button class="btn btn-primary">Button ${count+1}</button>
+        <input class="form-control" placeholder="Input ${count+2}">
+        <button class="antd-btn">Antd ${count+3}</button>
+        <select class="form-select form-control">
+          <option>Dropdown ${count+4}</option>
+        </select>
+        <label class="radio"><input type="radio" name="many_${i}"> Radio ${count+5}</label>
+        <button class="button is-info">Bulma ${count+6}</button>
+        <input class="input" placeholder="Bulma Input ${count+7}">
+        <button class="shadcn-btn">Shadcn ${count+8}</button>
+      </div>
+    `;
+    count += 8;
+  }
+</script>
+
+</body>
+</html>
