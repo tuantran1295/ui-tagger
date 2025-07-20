@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Stage, Layer, Image as KonvaImage } from "react-konva";
+import CircularProgress from "@mui/material/CircularProgress";
 import useImage from "use-image";
 import {
     Box,
@@ -13,7 +14,9 @@ import AnnotationBox from "./AnnotationBox";
 import LLMBox from "./LLMBox";
 import { TAGS } from "./tagList";
 
-// Main App
+const MAX_WIDTH = 900;
+const MAX_HEIGHT = 600;
+
 function App() {
     const [imgUrl, setImgUrl] = useState(null);
     const [annotations, setAnnotations] = useState([]);
@@ -22,15 +25,46 @@ function App() {
     const [currentTag, setCurrentTag] = useState(TAGS[0]);
     const [selectedId, setSelectedId] = useState(null);
 
+    const [loading, setLoading] = useState(false);
+
     const [image] = useImage(imgUrl);
     const stageRef = useRef();
+
+    // -- SCALE LOGIC --
+    let scale = 1;
+    let stageWidth = MAX_WIDTH;
+    let stageHeight = MAX_HEIGHT;
+    if (image && image.width && image.height) {
+        scale = Math.min(
+            MAX_WIDTH / image.width,
+            MAX_HEIGHT / image.height,
+            1 // never upscale
+        );
+        stageWidth = Math.round(image.width * scale);
+        stageHeight = Math.round(image.height * scale);
+    }
+
+    // --- Debug logs ---
+    console.log("SCALE:", scale);
+    console.log(
+        "User box:",
+        annotations[0]?.x,
+        annotations[0]?.y,
+        annotations[0]?.width,
+        annotations[0]?.height
+    );
+    console.log("LLM box raw:", llmAnnotations[0]?.box);
+    console.log(
+        "LLM box scaled:",
+        llmAnnotations[0]?.box?.map(v => v * scale)
+    );
 
     // Draw box: mouse handlers
     const handleMouseDown = (e) => {
         if (!image) return;
-       // if (e.target !== e.target.getStage()) return;
         const { x, y } = e.target.getStage().getPointerPosition();
-        setDrawingBox({ x, y, width: 0, height: 0 });
+        // Convert to image coordinates (unscaling)
+        setDrawingBox({ x: x / scale, y: y / scale, width: 0, height: 0 });
     };
 
     const handleMouseMove = (e) => {
@@ -38,8 +72,8 @@ function App() {
         const { x, y } = e.target.getStage().getPointerPosition();
         setDrawingBox({
             ...drawingBox,
-            width: x - drawingBox.x,
-            height: y - drawingBox.y,
+            width: x / scale - drawingBox.x,
+            height: y / scale - drawingBox.y,
         });
     };
 
@@ -56,6 +90,8 @@ function App() {
                     width: Math.abs(drawingBox.width),
                     height: Math.abs(drawingBox.height),
                     tag: currentTag,
+                    x: Math.min(drawingBox.x, drawingBox.x + drawingBox.width),
+                    y: Math.min(drawingBox.y, drawingBox.y + drawingBox.height)
                 },
             ]);
         }
@@ -79,21 +115,25 @@ function App() {
     // Predict
     const handlePredict = async () => {
         if (!imgUrl) return;
-        // Get original file blob
-        const blob = await fetch(imgUrl).then((r) => r.blob());
-        const form = new FormData();
-        form.append("file", blob, "image.png");
-        // Update to your backend endpoint:
-        const res = await fetch("http://localhost:8000/predict", {
-            method: "POST",
-            body: form,
-        });
-        if (!res.ok) {
-            alert("Prediction failed.");
-            return;
+        setLoading(true);
+        try {
+            const blob = await fetch(imgUrl).then((r) => r.blob());
+            const form = new FormData();
+            form.append("file", blob, "image.png");
+            const res = await fetch("http://localhost:8000/predict", {
+                method: "POST",
+                body: form,
+            });
+            if (!res.ok) {
+                alert("Prediction failed.");
+                return;
+            }
+            const pred = await res.json();
+            setLlmAnnotations(pred);
+        }  finally {
+            setLoading(false);
         }
-        const pred = await res.json();
-        setLlmAnnotations(pred);
+
     };
 
     // Save annotation as JSON
@@ -142,10 +182,10 @@ function App() {
                 </Select>
                 <Button
                     variant="contained"
-                    disabled={!imgUrl}
+                    disabled={!imgUrl || loading}
                     onClick={handlePredict}
                 >
-                    Predict
+                    {loading ? <CircularProgress size={22} sx={{ color: "white" }} /> : "Predict"}
                 </Button>
                 <Button
                     variant="outlined"
@@ -161,39 +201,54 @@ function App() {
                 sx={{
                     display: "inline-block",
                     position: "relative",
-                    maxWidth: 900,
-                    maxHeight: 600,
+                    maxWidth: MAX_WIDTH,
+                    maxHeight: MAX_HEIGHT,
                 }}
                 mt={2}
             >
                 {imgUrl && (
                     <Stage
-                        width={Math.min(900, image?.width || 800)}
-                        height={Math.min(600, image?.height || 600)}
+                        width={stageWidth}
+                        height={stageHeight}
                         ref={stageRef}
                         onMouseDown={handleMouseDown}
                         onMousemove={handleMouseMove}
                         onMouseup={handleMouseUp}
+                        style={{ background: "#f9f9f9" }}
                     >
                         <Layer>
                             {image && (
                                 <KonvaImage
                                     image={image}
-                                    width={image.width}
-                                    height={image.height}
+                                    width={image.width * scale}
+                                    height={image.height * scale}
                                 />
                             )}
                             {/* User drawn boxes */}
                             {annotations.map((ann, i) => (
                                 <AnnotationBox
                                     key={i}
-                                    shapeProps={ann}
+                                    shapeProps={{
+                                        ...ann,
+                                        x: ann.x * scale,
+                                        y: ann.y * scale,
+                                        width: ann.width * scale,
+                                        height: ann.height * scale,
+                                    }}
                                     isSelected={selectedId === i}
                                     onSelect={() => setSelectedId(i)}
                                     onChange={(newShape) =>
                                         setAnnotations(
                                             annotations.map((a, idx) =>
-                                                idx === i ? { ...a, ...newShape } : a
+                                                idx === i ? {
+                                                    ...a,
+                                                    ...{
+                                                        x: newShape.x / scale,
+                                                        y: newShape.y / scale,
+                                                        width: newShape.width / scale,
+                                                        height: newShape.height / scale,
+                                                    }
+                                                } : a
                                             )
                                         )
                                     }
@@ -204,12 +259,27 @@ function App() {
                             ))}
                             {/* LLM predictions */}
                             {llmAnnotations.map((ann, i) => (
-                                <LLMBox key={i} box={ann.box} tag={ann.tag} />
+                                <LLMBox
+                                    key={i}
+                                    box={[
+                                        ann.box[0] * scale,
+                                        ann.box[1] * scale,
+                                        ann.box[2] * scale,
+                                        ann.box[3] * scale
+                                    ]}
+                                    tag={ann.tag}
+                                />
                             ))}
                             {/* Drawing preview */}
                             {drawingBox && (
                                 <AnnotationBox
-                                    shapeProps={drawingBox}
+                                    shapeProps={{
+                                        ...drawingBox,
+                                        x: drawingBox.x * scale,
+                                        y: drawingBox.y * scale,
+                                        width: drawingBox.width * scale,
+                                        height: drawingBox.height * scale,
+                                    }}
                                     isSelected={false}
                                     tag={currentTag}
                                 />
