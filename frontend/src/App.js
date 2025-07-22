@@ -19,6 +19,7 @@ const MAX_HEIGHT = 600;
 
 function App() {
     const [imgUrl, setImgUrl] = useState(null);
+    const [originalImage, setOriginalImage] = useState(null);
     const [annotations, setAnnotations] = useState([]);
     const [llmAnnotations, setLlmAnnotations] = useState([]);
     const [drawingBox, setDrawingBox] = useState(null);
@@ -45,19 +46,24 @@ function App() {
     }
 
     // --- Debug logs ---
-    console.log("SCALE:", scale);
-    console.log(
-        "User box:",
-        annotations[0]?.x,
-        annotations[0]?.y,
-        annotations[0]?.width,
-        annotations[0]?.height
-    );
-    console.log("LLM box raw:", llmAnnotations[0]?.box);
-    console.log(
-        "LLM box scaled:",
-        llmAnnotations[0]?.box?.map(v => v * scale)
-    );
+    // console.log("SCALE:", scale);
+    // console.log(
+    //     "User box:",
+    //     annotations[0]?.x,
+    //     annotations[0]?.y,
+    //     annotations[0]?.width,
+    //     annotations[0]?.height
+    // );
+    // console.log("LLM box raw:", llmAnnotations[0]?.box);
+    // console.log(
+    //     "LLM box scaled:",
+    //     llmAnnotations[0]?.box?.map(v => v * scale)
+    // );
+
+    console.log("original image size", image?.width, image?.height);
+    console.log("stage size", stageWidth, stageHeight);
+    console.log("scale", scale);
+    console.log("llm box raw", llmAnnotations[0]?.box); // e.g. [x, y, w, h]
 
     // Draw box: mouse handlers
     const handleMouseDown = (e) => {
@@ -107,7 +113,10 @@ function App() {
     // File upload & convert
     const handleUpload = (e) => {
         const file = e.target.files[0];
-        if (file) setImgUrl(URL.createObjectURL(file));
+        if (file) {
+            setImgUrl(URL.createObjectURL(file));
+            setOriginalImage(file);
+        }
         setAnnotations([]);
         setLlmAnnotations([]);
     };
@@ -117,9 +126,11 @@ function App() {
         if (!imgUrl) return;
         setLoading(true);
         try {
-            const blob = await fetch(imgUrl).then((r) => r.blob());
+            // const blob = await fetch(imgUrl).then((r) => r.blob());
             const form = new FormData();
-            form.append("file", blob, "image.png");
+            form.append("file", originalImage, "image.png");
+            form.append("imageWidth", image?.width);
+            form.append("imageHeight", image?.height);
             const res = await fetch("http://localhost:8000/predict", {
                 method: "POST",
                 body: form,
@@ -261,6 +272,7 @@ function App() {
                             {llmAnnotations.map((ann, i) => (
                                 <LLMBox
                                     key={i}
+                                    // box={ann.box}
                                     box={[
                                         ann.box[0] * scale,
                                         ann.box[1] * scale,

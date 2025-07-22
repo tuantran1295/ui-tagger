@@ -10,10 +10,13 @@ def call_gpt4_vision(b64_image, prompt):
             {"role": "system", "content": "You are a computer vision JSON tagging bot."},
             {"role": "user", "content": [
                 {"type": "text", "text": prompt},
-                {"type": "image_url", "image_url": {"url": image_url}}
+                {"type": "image_url", "image_url": {
+                    "url": image_url,
+                    # "detail": "high"
+                }}
             ]}
         ],
-        max_tokens=1024,
+        max_tokens=2048,
     )
     text = completion.choices[0].message.content
     # Extract JSON block
