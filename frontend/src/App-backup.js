@@ -25,7 +25,6 @@ function App() {
     const [drawingBox, setDrawingBox] = useState(null);
     const [currentTag, setCurrentTag] = useState(TAGS[0]);
     const [selectedId, setSelectedId] = useState(null);
-
     const [loading, setLoading] = useState(false);
 
     const [image] = useImage(imgUrl);
@@ -49,16 +48,28 @@ function App() {
     const scaleX = stageWidth / (image?.width || 1);
     const scaleY = stageHeight / (image?.height || 1);
 
-    // Debug log
-    // console.log("original image size", image?.width, image?.height);
-    // console.log("stage size", stageWidth, stageHeight);
-    // console.log("scaleX, scaleY", scaleX, scaleY);
+    // Khung chuẩn của LLM (có thể khác image gốc!)
+    let gptWidth = image?.width || 1;
+    let gptHeight = image?.height || 1;
+    if (llmAnnotations.length > 0) {
+        const maxRight = Math.max(...llmAnnotations.map(a => a.box[0] + a.box[2]));
+        const maxBottom = Math.max(...llmAnnotations.map(a => a.box[1] + a.box[3]));
+        // Chỉ adjust nếu lệch đáng kể, hoặc nếu chắc chắn LLM trả về dưới size ảnh gốc
+        if (maxRight < gptWidth * 0.95 || maxBottom < gptHeight * 0.95) {
+            gptWidth = maxRight;
+            gptHeight = maxBottom;
+        }
+    }
+    const scaleLLMX = stageWidth / gptWidth;
+    const scaleLLMY = stageHeight / gptHeight;
+
+    console.log(`gptWidth: ${gptWidth}, gptHeight: ${gptHeight}`);
+    console.log(`scaleLLMX: ${scaleLLMX}, scaleY: ${scaleLLMY}`);
 
     // Draw box: mouse handlers
     const handleMouseDown = (e) => {
         if (!image) return;
         const { x, y } = e.target.getStage().getPointerPosition();
-        // Convert to image coordinates (unscaling)
         setDrawingBox({ x: x / scaleX, y: y / scaleY, width: 0, height: 0 });
     };
 
@@ -131,24 +142,18 @@ function App() {
 
             const maxX = Math.max(...pred.map(a => a.box[0] + a.box[2]));
             const maxY = Math.max(...pred.map(a => a.box[1] + a.box[3]));
+
+            const minX= Math.min(...pred.map(a => a.box[0]));
+            const minY = Math.min(...pred.map(a => a.box[1]));
+
             console.log('LLM max right/bottom:', maxX, maxY);
+            console.log('LLM min left/top:', minX, minY);
             console.log('Image size:', image?.width, image?.height);
+            console.log("stage size", stageWidth, stageHeight);
+            console.log("scaleX, scaleY", scaleX, scaleY);
 
-            const recoverX = image.width / maxX;
-            const recoverY = image.height / maxY;
-
-            const corrected = pred.map(a => ({
-                ...a,
-                box: [
-                    a.box[0] * recoverX,
-                    a.box[1] * recoverY,
-                    a.box[2] * recoverX,
-                    a.box[3] * recoverY
-                ]
-            }));
-
-            setLlmAnnotations(corrected);
-        }  finally {
+            setLlmAnnotations(pred);
+        } finally {
             setLoading(false);
         }
     };
@@ -278,11 +283,12 @@ function App() {
                             {llmAnnotations.map((ann, i) => (
                                 <LLMBox
                                     key={i}
+                                    // box={ann.box}
                                     box={[
-                                        ann.box[0] * scaleX,
-                                        ann.box[1] * scaleY,
-                                        ann.box[2] * scaleX,
-                                        ann.box[3] * scaleY
+                                        ann.box[0] * scaleLLMX,
+                                        ann.box[1] * scaleLLMY,
+                                        ann.box[2] * scaleLLMX,
+                                        ann.box[3] * scaleLLMY
                                     ]}
                                     tag={ann.tag}
                                 />

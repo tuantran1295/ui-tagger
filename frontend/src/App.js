@@ -48,20 +48,9 @@ function App() {
     const scaleX = stageWidth / (image?.width || 1);
     const scaleY = stageHeight / (image?.height || 1);
 
-    // Khung chuẩn của LLM (có thể khác image gốc!)
-    let gptWidth = image?.width || 1;
-    let gptHeight = image?.height || 1;
-    if (llmAnnotations.length > 0) {
-        const maxRight = Math.max(...llmAnnotations.map(a => a.box[0] + a.box[2]));
-        const maxBottom = Math.max(...llmAnnotations.map(a => a.box[1] + a.box[3]));
-        // Chỉ adjust nếu lệch đáng kể, hoặc nếu chắc chắn LLM trả về dưới size ảnh gốc
-        if (maxRight < gptWidth * 0.95 || maxBottom < gptHeight * 0.95) {
-            gptWidth = maxRight;
-            gptHeight = maxBottom;
-        }
-    }
-    const scaleLLMX = stageWidth / gptWidth;
-    const scaleLLMY = stageHeight / gptHeight;
+    // LLMBox cũng scale y như image gốc
+    const scaleLLMX = stageWidth / (image?.width || 1);
+    const scaleLLMY = stageHeight / (image?.height || 1);
 
     // Draw box: mouse handlers
     const handleMouseDown = (e) => {
@@ -136,13 +125,26 @@ function App() {
                 return;
             }
             const pred = await res.json();
+
+            const maxX = Math.max(...pred.map(a => a.box[0] + a.box[2]));
+            const maxY = Math.max(...pred.map(a => a.box[1] + a.box[3]));
+
+            const minX= Math.min(...pred.map(a => a.box[0]));
+            const minY = Math.min(...pred.map(a => a.box[1]));
+
+            console.log('LLM max right/bottom:', maxX, maxY);
+            console.log('LLM min left/top:', minX, minY);
+            console.log('Image size:', image?.width, image?.height);
+            console.log("stage size", stageWidth, stageHeight);
+            console.log("scaleX, scaleY", scaleX, scaleY);
+
             setLlmAnnotations(pred);
         } finally {
             setLoading(false);
         }
     };
 
-    // Save annotation as JSON
+    // Save annotation as JSON (User Annotations)
     const handleSave = () => {
         const json = JSON.stringify(
             annotations.map((a) => ({
@@ -160,7 +162,29 @@ function App() {
         const blob = new Blob([json], { type: "application/json" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "annotations.json";
+        link.download = "user_annotations.json";
+        link.click();
+    };
+
+    // Save LLM predictions as JSON
+    const handleSaveLLM = () => {
+        const json = JSON.stringify(
+            llmAnnotations.map((a) => ({
+                box: [
+                    Math.round(a.box[0]),
+                    Math.round(a.box[1]),
+                    Math.round(a.box[2]),
+                    Math.round(a.box[3])
+                ],
+                tag: a.tag,
+            })),
+            null,
+            2
+        );
+        const blob = new Blob([json], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "llm_annotations.json";
         link.click();
     };
 
@@ -198,7 +222,14 @@ function App() {
                     disabled={!annotations.length}
                     onClick={handleSave}
                 >
-                    Save Annotations (JSON)
+                    Export User Annotations (JSON)
+                </Button>
+                <Button
+                    variant="outlined"
+                    disabled={!llmAnnotations.length}
+                    onClick={handleSaveLLM}
+                >
+                    Export Prediction Annotations (JSON)
                 </Button>
             </Stack>
             <Box
